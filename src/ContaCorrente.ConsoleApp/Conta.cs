@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
@@ -25,16 +26,18 @@ namespace ContaCorrente.ConsoleApp
         public decimal Saldo { get; set; }
         public DadosUsuario dadosUsuario { get; set; }
 
-        public void Ehespecial()
-        {
-            if (LimiteConta >= 5000)
-                Console.WriteLine("CONTA ESPECIAL");
-            else
-                Console.WriteLine("CONTA PADRÃO");
-        }
         public decimal MostrarSaldo()
         {
             return Saldo;
+        }
+        public void Transferir(Conta destino, decimal ValorTransferencia)
+        {
+            if (Saldo >= ValorTransferencia)
+            {
+                destino.Depositar(ValorTransferencia);
+                Sacar(ValorTransferencia);
+            }
+            else Console.WriteLine("Valor Insuficiente!");
         }
         public void Depositar(decimal ValorDeposito)
         {
@@ -44,12 +47,22 @@ namespace ContaCorrente.ConsoleApp
         {
             if (ValorSaque <= Saldo)
                 Saldo -= ValorSaque;
+            else if (ValorSaque <= LimiteConta)
+            {
+                LimiteConta -= ValorSaque;
+                Console.WriteLine($"A operação foi realizada no Crédito, limite atual: {LimiteConta}");
+            }
             else
-                Console.WriteLine("Saldo insuficiente!");
+                Console.WriteLine("Limite Insuficiente!");
         }
-        public void Transferencia(decimal ValorTransferencia)
+        public string Ehespecial()
         {
-            Saldo += ValorTransferencia;
+            if (LimiteConta >= 5000)
+            {
+                return "CONTA ESPECIAL";
+            }
+            else
+                return "CONTA PADRÃO";
         }
 
     }
